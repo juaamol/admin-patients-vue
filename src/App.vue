@@ -1,5 +1,13 @@
-<script setup></script>
+<script setup>
+import Header from './components/Header.vue';
+import Form from './components/Form.vue';
+</script>
 
 <template>
-  <h1 class="text-6xl">Hello world tailwind</h1>
+  <div class="container mx-auto mt-20">
+    <Header></Header>
+    <div class="mt-12 md:flex">
+      <Form></Form>
+    </div>
+  </div>
 </template>
