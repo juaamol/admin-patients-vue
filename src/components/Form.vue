@@ -13,12 +13,58 @@
           Pet name
         </label>
         <input
-          type="text"
           id="pet"
+          type="text"
           placeholder="Pet name"
           class="border-2 w-full p-2 mt-2 placeholder-gray-400 rounder-md"
         />
       </div>
+      <div class="mb-5">
+        <label for="owner" class="block text-gray-700 uppercase font-bold">
+          Owner
+        </label>
+        <input
+          id="owner"
+          type="text"
+          placeholder="Owner's name"
+          class="border-2 w-full p-2 mt-2 placeholder-gray-400 rounder-md"
+        />
+      </div>
+      <div class="mb-5">
+        <label for="email" class="block text-gray-700 uppercase font-bold">
+          Email
+        </label>
+        <input
+          id="email"
+          type="email"
+          placeholder="Email"
+          class="border-2 w-full p-2 mt-2 placeholder-gray-400 rounder-md"
+        />
+      </div>
+      <div class="mb-5">
+        <label for="release" class="block text-gray-700 uppercase font-bold">
+          Release date
+        </label>
+        <input
+          id="release"
+          type="date"
+          class="border-2 w-full p-2 mt-2 placeholder-gray-400 rounder-md"
+        />
+      </div>
+      <div class="mb-5">
+        <label for="symptoms" class="block text-gray-700 uppercase font-bold">
+          Symptoms
+        </label>
+        <textarea
+          id="symptoms"
+          placeholder="Describe the symptoms of the patient"
+          class="border-2 w-full p-2 mt-2 placeholder-gray-400 rounder-md"
+        ></textarea>
+      </div>
+      <input
+        type="submit"
+        class="bg-indigo-600 w-full p-3 text-white uppercase font-bold hover:bg-indigo-700 cursor-pointer transition-colors"
+      />
     </form>
   </div>
 </template>
