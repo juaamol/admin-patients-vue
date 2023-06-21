@@ -5,26 +5,11 @@ import { petFormErrors as errors } from '../validators/form/error-messages';
 import Alert from './Alert.vue';
 
 const props = defineProps({
-  petName: {
-    type: String,
-    required: true,
-  },
-  owner: {
-    type: String,
-    required: true,
-  },
-  email: {
-    type: String,
-    required: true,
-  },
-  symptoms: {
-    type: String,
-    required: true,
-  },
-  releaseDate: {
-    type: String,
-    required: true,
-  },
+  petName: String,
+  owner: String,
+  email: String,
+  releaseDate: String,
+  symptoms: String,
 });
 
 const emit = defineEmits([
@@ -51,56 +36,60 @@ const isFieldValid = reactive({
 });
 
 const isFormSubmitted = ref(false);
-const isFormValid = computed(() => {
-  return !Object.values(isFieldValid).some((value) => !value);
-});
+const isFormValid = ref(false);
 
 const validateForm = () => {
+  isFormSubmitted.value = true;
+  isFormValid.value = !Object.values(isFieldValid).some((value) => !value);
+
   for (const key of Object.keys(isVisitedField)) {
-    isVisitedField[key] = true;
+    isVisitedField[key] = !isFormValid.value;
   }
 
-  isFormSubmitted.value = true;
-
   if (isFormValid.value) {
+    for (const key of Object.keys(isFieldValid)) {
+      isFieldValid[key] = false;
+    }
+
     emit('save-patient');
   }
 };
 
-watch(
-  () => props.petName,
-  (value) => {
-    isFieldValid.petName = !isEmpty(value);
-    isVisitedField.petName = true;
-  },
-);
+const updatePetName = (event) => {
+  isVisitedField.petName = true;
+  isFieldValid.petName = !isEmpty(event.target.value);
+  emit('update:petName', event.target.value);
+};
 
-watch(
-  () => props.owner,
-  (value) => {
-    isFieldValid.owner = !isEmpty(value);
-    isVisitedField.owner = true;
-  },
-);
+const updateOwner = (event) => {
+  isVisitedField.owner = true;
+  isFieldValid.owner = !isEmpty(event.target.value);
+  emit('update:owner', event.target.value);
+};
 
-watch(
-  () => props.email,
-  (value) => {
-    isFieldValid.email = isEmail(value);
-    isVisitedField.email = true;
-  },
-);
+const updateEmail = (event) => {
+  isVisitedField.email = true;
+  isFieldValid.email = isEmail(event.target.value);
+  emit('update:email', event.target.value);
+};
 
-watch(
-  () => props.releaseDate,
-  (value) => {
-    isFieldValid.releaseDate = !isEmpty(value);
-    isVisitedField.releaseDate = true;
-  },
-);
+const updateReleaseDate = (event) => {
+  isVisitedField.releaseDate = true;
+  isFieldValid.releaseDate = !isEmpty(event.target.value);
+  emit('update:releaseDate', event.target.value);
+};
 
-watch(props, () => {
-  isFormSubmitted.value = false;
+const updateSymptoms = (event) => {
+  isVisitedField.symptoms = true;
+  emit('update:symptoms', event.target.value);
+};
+
+watch(isFormSubmitted, (_, _2, onCleanup) => {
+  const timeout = setTimeout(() => {
+    isFormSubmitted.value = false;
+  }, 3000);
+
+  onCleanup(() => clearTimeout(timeout));
 });
 </script>
 
@@ -112,17 +101,17 @@ watch(props, () => {
       <span class="text-indigo-600 font-bold">Manage</span>
     </p>
     <Alert
-      v-if="isFormValid && isFormSubmitted"
+      :show="isFormValid && isFormSubmitted"
       type="success"
       message="Form data saved successfully"
     />
     <Alert
-      v-if="!isFormValid && isFormSubmitted"
+      :show="!isFormValid && isFormSubmitted"
       type="error"
       message="Some fields are missing"
     />
     <form
-      class="bg-white shadow-md rounder-lg py-10 px-5 mb-10"
+      class="bg-white shadow-md rounder-lg py-10 px-5 mb-10 rounded-xl"
       @submit.prevent="validateForm"
     >
       <div class="mb-5">
@@ -135,7 +124,7 @@ watch(props, () => {
           placeholder="Pet name"
           class="border-2 w-full p-2 mt-2 placeholder-gray-400 rounder-md"
           :value="petName"
-          @input="$emit('update:petName', $event.target.value)"
+          @input="updatePetName"
         />
         <p
           v-if="!isFieldValid.petName && isVisitedField.petName"
@@ -154,7 +143,7 @@ watch(props, () => {
           placeholder="Owner's name"
           class="border-2 w-full p-2 mt-2 placeholder-gray-400 rounder-md"
           :value="owner"
-          @input="$emit('update:owner', $event.target.value)"
+          @input="updateOwner"
         />
         <p
           v-if="!isFieldValid.owner && isVisitedField.owner"
@@ -173,7 +162,7 @@ watch(props, () => {
           placeholder="Email"
           class="border-2 w-full p-2 mt-2 placeholder-gray-400 rounder-md"
           :value="email"
-          @input="$emit('update:email', $event.target.value)"
+          @input="updateEmail"
         />
         <p
           v-if="!isFieldValid.email && isVisitedField.email"
@@ -191,7 +180,7 @@ watch(props, () => {
           type="date"
           class="border-2 w-full p-2 mt-2 placeholder-gray-400 rounder-md"
           :value="releaseDate"
-          @input="$emit('update:releaseDate', $event.target.value)"
+          @input="updateReleaseDate"
         />
         <p
           v-if="!isFieldValid.releaseDate && isVisitedField.releaseDate"
@@ -209,7 +198,7 @@ watch(props, () => {
           placeholder="Describe the symptoms of the patient"
           class="border-2 w-full p-2 mt-2 placeholder-gray-400 rounder-md"
           :value="symptoms"
-          @input="$emit('update:symptoms', $event.target.value)"
+          @input="updateSymptoms"
         ></textarea>
       </div>
       <input

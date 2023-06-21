@@ -2,6 +2,7 @@
 import Header from './components/Header.vue';
 import Form from './components/Form.vue';
 import { ref, reactive } from 'vue';
+import Patient from './components/Patient.vue';
 
 const patients = ref([]);
 
@@ -14,7 +15,16 @@ const patient = reactive({
 });
 
 const savePatient = () => {
-  patients.value.push(patient);
+  patients.value.push({ ...patient });
+  resetForm();
+};
+
+const resetForm = () => {
+  patient.petName = '';
+  patient.owner = '';
+  patient.email = '';
+  patient.symptoms = '';
+  patient.releaseDate = '';
 };
 </script>
 
@@ -30,10 +40,23 @@ const savePatient = () => {
         v-model:symptoms="patient.symptoms"
         @save-patient="savePatient"
       ></Form>
-      <div class="md:1/2 md:h-screen overflow-y-scroll">
+      <div class="md:w-1/2 md:h-screen overflow-y-scroll">
         <h3 class="font-black text-3xl text-center">Manage your patients</h3>
 
-        <div v-if="patients.length > 0"></div>
+        <div v-if="patients.length > 0">
+          <p class="text-lg mt-5 text-center mb-10">
+            Patients
+            <span class="text-indigo-600 font-bold">Information</span>
+          </p>
+          <Patient
+            v-for="patient of patients"
+            :petName="patient.petName"
+            :owner="patient.owner"
+            :email="patient.email"
+            :releaseDate="patient.releaseDate"
+            :symptoms="patient.symptoms"
+          />
+        </div>
         <p v-else class="text-lg mt-5 text-center mb-10">No patients</p>
       </div>
     </div>
