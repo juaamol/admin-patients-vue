@@ -4,13 +4,11 @@ import { isEmail, isEmpty } from '../validators/form/validators';
 import { petFormErrors as errors } from '../validators/form/error-messages';
 import Alert from './Alert.vue';
 
-const patient = reactive({
-  petName: '',
-  owner: '',
-  email: '',
-  symptoms: '',
-  releaseDate: '',
-});
+const petName = ref('');
+const owner = ref('');
+const email = ref('');
+const symptoms = ref('');
+const releaseDate = ref('');
 
 const isVisitedField = reactive({
   petName: false,
@@ -26,11 +24,10 @@ const isFieldValid = reactive({
   releaseDate: false,
 });
 
+const isFormSubmitted = ref(false);
 const isFormValid = computed(() => {
   return !Object.values(isFieldValid).some((value) => !value);
 });
-
-const isFormSubmitted = ref(false);
 
 const validateForm = () => {
   for (const key of Object.keys(isVisitedField)) {
@@ -40,34 +37,27 @@ const validateForm = () => {
   isFormSubmitted.value = true;
 };
 
-const validateField = (e) => {
-  const field = e.target;
+watch(petName, (value) => {
+  isFieldValid.petName = !isEmpty(value);
+  isVisitedField.petName = true;
+});
 
-  switch (field.id) {
-    case 'petName':
-      isFieldValid.petName = !isEmpty(field.value);
-      break;
-    case 'owner':
-      isFieldValid.owner = !isEmpty(field.value);
-      break;
-    case 'email':
-      isFieldValid.email = isEmail(field.value);
-      break;
-    case 'releaseDate':
-      isFieldValid.releaseDate = !isEmpty(field.value);
-      break;
-    default:
-      break;
-  }
-};
+watch(owner, (value) => {
+  isFieldValid.owner = !isEmpty(value);
+  isVisitedField.owner = true;
+});
 
-const interactWithField = (e) => {
-  isVisitedField[e.target.id] = true;
+watch(email, (value) => {
+  isFieldValid.email = isEmail(value);
+  isVisitedField.email = true;
+});
 
-  validateField(e);
-};
+watch(releaseDate, (value) => {
+  isFieldValid.releaseDate = !isEmpty(value);
+  isVisitedField.releaseDate = true;
+});
 
-watch(patient, () => {
+watch([petName, owner, email, releaseDate], () => {
   isFormSubmitted.value = false;
 });
 </script>
@@ -102,9 +92,7 @@ watch(patient, () => {
           type="text"
           placeholder="Pet name"
           class="border-2 w-full p-2 mt-2 placeholder-gray-400 rounder-md"
-          v-model="patient.petName"
-          @blur="interactWithField"
-          @input="interactWithField"
+          v-model="petName"
         />
         <p
           v-if="!isFieldValid.petName && isVisitedField.petName"
@@ -122,9 +110,7 @@ watch(patient, () => {
           type="text"
           placeholder="Owner's name"
           class="border-2 w-full p-2 mt-2 placeholder-gray-400 rounder-md"
-          v-model="patient.owner"
-          @blur="interactWithField"
-          @input="interactWithField"
+          v-model="owner"
         />
         <p
           v-if="!isFieldValid.owner && isVisitedField.owner"
@@ -142,9 +128,7 @@ watch(patient, () => {
           type="email"
           placeholder="Email"
           class="border-2 w-full p-2 mt-2 placeholder-gray-400 rounder-md"
-          v-model="patient.email"
-          @blur="interactWithField"
-          @input="interactWithField"
+          v-model="email"
         />
         <p
           v-if="!isFieldValid.email && isVisitedField.email"
@@ -161,9 +145,7 @@ watch(patient, () => {
           id="releaseDate"
           type="date"
           class="border-2 w-full p-2 mt-2 placeholder-gray-400 rounder-md"
-          v-model="patient.releaseDate"
-          @blur="interactWithField"
-          @input="interactWithField"
+          v-model="releaseDate"
         />
         <p
           v-if="!isFieldValid.releaseDate && isVisitedField.releaseDate"
@@ -180,7 +162,7 @@ watch(patient, () => {
           id="symptoms"
           placeholder="Describe the symptoms of the patient"
           class="border-2 w-full p-2 mt-2 placeholder-gray-400 rounder-md"
-          v-model="patient.symptoms"
+          v-model="symptoms"
         ></textarea>
       </div>
       <input
