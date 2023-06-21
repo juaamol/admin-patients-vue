@@ -20,6 +20,10 @@ const props = defineProps({
     type: String,
     required: true,
   },
+  id: {
+    type: String,
+    required: true,
+  },
 });
 </script>
 
@@ -27,7 +31,7 @@ const props = defineProps({
   <div class="mx-5 my-10 bg-white shadow-md px-5 py-10 rounded-xl">
     <p class="font-bold mb-3 text-gray-700 uppercase">
       ID:
-      <span class="font-normal normal-case"> </span>
+      <span class="font-normal normal-case">{{ id }}</span>
     </p>
 
     <p class="font-bold mb-3 text-gray-700 uppercase">
