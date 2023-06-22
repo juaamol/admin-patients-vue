@@ -4,29 +4,33 @@ import { uid } from 'uid';
 import Header from './components/Header.vue';
 import Form from './components/Form.vue';
 import Patient from './components/Patient.vue';
+import { defaultPatient } from './data/app/patient';
 
 const patients = ref([]);
-
-const patient = reactive({
-  id: null,
-  petName: '',
-  owner: '',
-  email: '',
-  symptoms: '',
-  releaseDate: '',
-});
+const patient = reactive({ ...defaultPatient });
 
 const savePatient = () => {
-  patients.value.push({ ...patient, id: uid() });
+  if (patient.id === null) {
+    patients.value.push({ ...patient, id: uid() });
+  } else {
+    const { id } = patient;
+    const patientToSave = patients.value.find((patient) => patient.id === id);
+    Object.assign(patientToSave, patient);
+  }
+
   resetForm();
 };
 
+const editPatient = (id) => {
+  const patientToEdit = patients.value.find((patient) => patient.id === id);
+
+  if (patientToEdit) {
+    Object.assign(patient, patientToEdit);
+  }
+};
+
 const resetForm = () => {
-  patient.petName = '';
-  patient.owner = '';
-  patient.email = '';
-  patient.symptoms = '';
-  patient.releaseDate = '';
+  Object.assign(patient, defaultPatient);
 };
 </script>
 
@@ -53,12 +57,8 @@ const resetForm = () => {
           <Patient
             v-for="patient of patients"
             :key="patient.id"
-            :id="patient.id"
-            :petName="patient.petName"
-            :owner="patient.owner"
-            :email="patient.email"
-            :releaseDate="patient.releaseDate"
-            :symptoms="patient.symptoms"
+            :patient="patient"
+            @edit="editPatient"
           />
         </div>
         <p v-else class="text-lg mt-5 text-center mb-10">No patients</p>
