@@ -1,14 +1,7 @@
 <script setup>
 const props = defineProps({
   patient: {
-    type: {
-      id: String,
-      petName: String,
-      owner: String,
-      releaseDate: String,
-      email: String,
-      symptoms: String,
-    },
+    type: Object,
     required: true,
   },
 });
@@ -52,7 +45,7 @@ defineEmits(['edit']);
       <button
         type="button"
         class="block w-full py-2 px-10 bg-indigo-600 hover:bg-indigo-700 text-white font-bold uppercase rounded-lg"
-        @click="$emit('edit', id)"
+        @click="$emit('edit', patient.id)"
       >
         Edit
       </button>

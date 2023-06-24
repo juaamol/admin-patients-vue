@@ -1,37 +1,66 @@
 <script setup>
-import { ref, reactive } from 'vue';
+import { ref, reactive, onBeforeUnmount } from 'vue';
 import { uid } from 'uid';
 import Header from './components/Header.vue';
 import Form from './components/Form.vue';
 import Patient from './components/Patient.vue';
 import { defaultPatient } from './data/app/patient';
+import { PatientForm } from './utils/patient-form';
 
+const isValid = ref(false);
 const patients = ref([]);
 const patient = reactive({ ...defaultPatient });
+const touched = reactive({
+  petName: false,
+  owner: false,
+  email: false,
+  releaseDate: false,
+});
+const errors = reactive({
+  petName: '',
+  owner: '',
+  email: '',
+  releaseDate: '',
+});
 
-const savePatient = () => {
-  if (patient.id === null) {
-    patients.value.push({ ...patient, id: uid() });
-  } else {
-    const { id } = patient;
-    const patientToSave = patients.value.find((patient) => patient.id === id);
-    Object.assign(patientToSave, patient);
+const form = new PatientForm();
+const unsubscribeForm = form.subscribe((update) => {
+  for (const key of Object.keys(update.values)) {
+    patient[key] = update.values[key];
+    errors[key] = update.errors[key];
+    touched[key] = update.touched[key];
   }
 
-  resetForm();
+  isValid.value = update.isValid;
+});
+
+const savePatient = () => {
+  form.submit();
+
+  if (form.isValid) {
+    if (!patient.id) {
+      patients.value.push({ ...patient, id: uid() });
+    } else {
+      const { id } = patient;
+      const patientToSave = patients.value.find((patient) => patient.id === id);
+      Object.assign(patientToSave, patient);
+    }
+
+    form.reset();
+  }
 };
 
 const editPatient = (id) => {
   const patientToEdit = patients.value.find((patient) => patient.id === id);
 
   if (patientToEdit) {
-    Object.assign(patient, patientToEdit);
+    form.reinitialize({ initialValues: patientToEdit });
   }
 };
 
-const resetForm = () => {
-  Object.assign(patient, defaultPatient);
-};
+onBeforeUnmount(() => {
+  unsubscribeForm();
+});
 </script>
 
 <template>
@@ -39,12 +68,16 @@ const resetForm = () => {
     <Header></Header>
     <div class="mt-12 md:flex">
       <Form
-        v-model:petName="patient.petName"
-        v-model:owner="patient.owner"
-        v-model:email="patient.email"
-        v-model:releaseDate="patient.releaseDate"
-        v-model:symptoms="patient.symptoms"
+        :errors="errors"
+        :touched="touched"
+        :patient="patient"
+        :isValid="isValid"
         @save-patient="savePatient"
+        @petName="form.change"
+        @owner="form.change"
+        @email="form.change"
+        @releaseDate="form.change"
+        @sypmtoms="form.change"
       ></Form>
       <div class="md:w-1/2 md:h-screen overflow-y-scroll">
         <h3 class="font-black text-3xl text-center">Manage your patients</h3>
