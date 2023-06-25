@@ -3,12 +3,17 @@ export class Form {
   errors = {};
   touched = {};
   validators = {};
-  isValid = false;
   observer = () => {};
 
   constructor({ initialValues, validators = {} }) {
     this.values = { ...initialValues };
     this.validators = { ...validators };
+    this.errors = this._validateAll();
+  }
+
+  get isValid() {
+    const errors = Object.values(this.errors);
+    return !errors.some((error) => error);
   }
 
   subscribe = (observer = () => {}) => {
@@ -18,49 +23,44 @@ export class Form {
   };
 
   change = (element) => {
-    const id = element.target.id;
+    const field = element.target.id;
     const value = element.target.value;
 
-    this.values[id] = value;
-    this.touched[id] = true;
-    this.errors[id] = this._validate(id);
-    this.isValid = this._isValid();
+    this.values[field] = value;
+    this.touched[field] = true;
+    this.errors[field] = this._validate(field);
     this._notify();
   };
 
   submit = () => {
-    for (const id of Object.keys(this.values)) {
-      this.touched[id] = true;
-      this.errors[id] = this._validate(id);
+    for (const field of Object.keys(this.values)) {
+      this.touched[field] = true;
+      this.errors[field] = this._validate(field);
     }
-
-    this.isValid = this._isValid();
     this._notify();
   };
 
   blur = (element) => {
-    const id = element.target.id;
-    this.touched[id] = true;
+    const field = element.target.id;
+    this.touched[field] = true;
     this._notify();
   };
 
   reinitialize = ({ initialValues, validators }) => {
     this.validators = validators ? { ...validators } : this.validators;
     this.values = { ...initialValues };
-    this.errors = {};
+    this.errors = this._validateAll();
     this.touched = {};
-    this.isValid = false;
     this._notify();
   };
 
-  reset = () => {
+  clean = () => {
     for (const key of Object.keys(this.values)) {
       this.values[key] = undefined;
+      this.errors[key] = undefined;
     }
 
-    this.errors = {};
     this.touched = {};
-    this.isValid = false;
     this._notify();
   };
 
@@ -73,14 +73,19 @@ export class Form {
     });
   }
 
-  _validate(id) {
-    if (this.validators[id]) {
-      return this.validators[id](this.values[id]);
+  _validateAll() {
+    const errors = {};
+
+    for (const field of Object.keys(this.values)) {
+      errors[field] = this._validate(field);
     }
+
+    return errors;
   }
 
-  _isValid() {
-    const errors = Object.values(this.errors);
-    return !errors.some((error) => error);
+  _validate(field) {
+    if (this.validators[field]) {
+      return this.validators[field](this.values[field]);
+    }
   }
 }
