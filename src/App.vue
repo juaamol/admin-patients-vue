@@ -30,7 +30,6 @@ const unsubscribeForm = form.subscribe((update) => {
     errors[key] = update.errors[key];
     touched[key] = update.touched[key];
   }
-
   isValid.value = update.isValid;
 });
 
@@ -72,12 +71,12 @@ onBeforeUnmount(() => {
         :touched="touched"
         :patient="patient"
         :isValid="isValid"
-        @save-patient="savePatient"
+        @submit="savePatient"
         @petName="form.change"
         @owner="form.change"
         @email="form.change"
         @releaseDate="form.change"
-        @sypmtoms="form.change"
+        @symptoms="form.change"
       ></Form>
       <div class="md:w-1/2 md:h-screen overflow-y-scroll">
         <h3 class="font-black text-3xl text-center">Manage your patients</h3>

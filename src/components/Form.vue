@@ -15,14 +15,10 @@ const emit = defineEmits([
   'owner',
   'email',
   'symptoms',
-  'save-patient',
+  'submit',
 ]);
 
 const isSubmitted = ref(false);
-
-const validateForm = () => {
-  emit('save-patient');
-};
 
 watch(isSubmitted, (_, _2, onCleanup) => {
   const timeout = setTimeout(() => {
@@ -52,7 +48,7 @@ watch(isSubmitted, (_, _2, onCleanup) => {
     />
     <form
       class="bg-white shadow-md rounder-lg py-10 px-5 mb-10 rounded-xl"
-      @submit.prevent="validateForm"
+      @submit.prevent="$emit('submit')"
     >
       <div class="mb-5">
         <label for="petName" class="block text-gray-700 uppercase font-bold">
