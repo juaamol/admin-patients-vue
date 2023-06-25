@@ -1,12 +1,12 @@
 <script setup>
-import { ref, watch } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import Alert from './Alert.vue';
 
 const props = defineProps({
   errors: Object,
   touched: Object,
   patient: Object,
-  isValid: Boolean,
+  alert: Object,
 });
 
 const emit = defineEmits([
@@ -17,16 +17,6 @@ const emit = defineEmits([
   'symptoms',
   'submit',
 ]);
-
-const isSubmitted = ref(false);
-
-watch(isSubmitted, (_, _2, onCleanup) => {
-  const timeout = setTimeout(() => {
-    isSubmitted.value = false;
-  }, 3000);
-
-  onCleanup(() => clearTimeout(timeout));
-});
 </script>
 
 <template>
@@ -37,12 +27,12 @@ watch(isSubmitted, (_, _2, onCleanup) => {
       <span class="text-indigo-600 font-bold">Manage</span>
     </p>
     <Alert
-      :show="isValid && isSubmitted"
+      :show="alert.isSuccess && alert.isShown"
       type="success"
       message="Form data saved successfully"
     />
     <Alert
-      :show="!isValid && isSubmitted"
+      :show="!alert.isSuccess && alert.isShown"
       type="error"
       message="Some fields are missing"
     />

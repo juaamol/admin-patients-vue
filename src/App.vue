@@ -22,6 +22,10 @@ const errors = reactive({
   email: '',
   releaseDate: '',
 });
+const alert = reactive({
+  isSuccess: false,
+  isShown: false,
+});
 
 const form = new PatientForm();
 const unsubscribeForm = form.subscribe((update) => {
@@ -32,6 +36,22 @@ const unsubscribeForm = form.subscribe((update) => {
   }
   isValid.value = update.isValid;
 });
+
+const showError = () => {
+  alert.isSuccess = false;
+  alert.isShown = true;
+};
+
+const showSuccess = () => {
+  alert.isSuccess = true;
+  alert.isShown = true;
+};
+
+const hideAlert = (delay = 4000) => {
+  setTimeout(() => {
+    alert.isShown = false;
+  }, delay);
+};
 
 const savePatient = () => {
   form.submit();
@@ -45,8 +65,13 @@ const savePatient = () => {
       Object.assign(patientToSave, patient);
     }
 
-    form.reset();
+    form.clean();
+    showSuccess();
+  } else {
+    showError();
   }
+
+  hideAlert();
 };
 
 const editPatient = (id) => {
@@ -70,7 +95,7 @@ onBeforeUnmount(() => {
         :errors="errors"
         :touched="touched"
         :patient="patient"
-        :isValid="isValid"
+        :alert="alert"
         @submit="savePatient"
         @petName="form.change"
         @owner="form.change"
