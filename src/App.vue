@@ -6,6 +6,7 @@ import Form from './components/Form.vue';
 import Patient from './components/Patient.vue';
 import { defaultPatient } from './data/app/patient';
 import { PatientForm } from './utils/patient-form';
+import { useAlert } from './composables/use-alert';
 
 const isValid = ref(false);
 const patients = ref([]);
@@ -22,7 +23,7 @@ const errors = reactive({
   email: '',
   releaseDate: '',
 });
-const alert = ref(null);
+
 const form = new PatientForm();
 const unsubscribeForm = form.subscribe((update) => {
   for (const key of Object.keys(update.values)) {
@@ -33,17 +34,7 @@ const unsubscribeForm = form.subscribe((update) => {
   isValid.value = update.isValid;
 });
 
-const showError = () => {
-  alert.value = 'error';
-};
-
-const showSuccess = () => {
-  alert.value = 'success';
-};
-
-const hideAlert = () => {
-  alert.value = null;
-};
+const { alert, showError, showSuccess, hideAlert } = useAlert();
 
 watch(alert, (alertType, _, cleanup) => {
   if (!!alertType) {
