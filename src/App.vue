@@ -1,5 +1,5 @@
 <script setup>
-import { ref, reactive, onBeforeUnmount } from 'vue';
+import { ref, reactive, onBeforeUnmount, watch } from 'vue';
 import { uid } from 'uid';
 import Header from './components/Header.vue';
 import Form from './components/Form.vue';
@@ -22,11 +22,7 @@ const errors = reactive({
   email: '',
   releaseDate: '',
 });
-const alert = reactive({
-  isSuccess: false,
-  isShown: false,
-});
-
+const alert = ref(null);
 const form = new PatientForm();
 const unsubscribeForm = form.subscribe((update) => {
   for (const key of Object.keys(update.values)) {
@@ -38,20 +34,26 @@ const unsubscribeForm = form.subscribe((update) => {
 });
 
 const showError = () => {
-  alert.isSuccess = false;
-  alert.isShown = true;
+  alert.value = 'error';
 };
 
 const showSuccess = () => {
-  alert.isSuccess = true;
-  alert.isShown = true;
+  alert.value = 'success';
 };
 
-const hideAlert = (delay = 4000) => {
-  setTimeout(() => {
-    alert.isShown = false;
-  }, delay);
+const hideAlert = () => {
+  alert.value = null;
 };
+
+watch(alert, (alertType, _, cleanup) => {
+  if (!!alertType) {
+    const timeout = setTimeout(() => {
+      hideAlert();
+    }, 4000);
+
+    cleanup(() => clearTimeout(timeout));
+  }
+});
 
 const savePatient = () => {
   form.submit();
@@ -70,8 +72,6 @@ const savePatient = () => {
   } else {
     showError();
   }
-
-  hideAlert();
 };
 
 const editPatient = (id) => {
@@ -79,6 +79,14 @@ const editPatient = (id) => {
 
   if (patientToEdit) {
     form.reinitialize({ initialValues: patientToEdit });
+  }
+};
+
+const deletePatient = (id) => {
+  patients.value = patients.value.filter((patient) => patient.id !== id);
+
+  if (patient.id === id) {
+    form.clean();
   }
 };
 
@@ -116,6 +124,7 @@ onBeforeUnmount(() => {
             :key="patient.id"
             :patient="patient"
             @edit="editPatient"
+            @delete="deletePatient"
           />
         </div>
         <p v-else class="text-lg mt-5 text-center mb-10">No patients</p>

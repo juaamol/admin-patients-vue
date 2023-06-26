@@ -1,12 +1,11 @@
 <script setup>
-import { onMounted, ref, watch } from 'vue';
 import Alert from './Alert.vue';
 
 const props = defineProps({
   errors: Object,
   touched: Object,
   patient: Object,
-  alert: Object,
+  alert: String,
 });
 
 const emit = defineEmits([
@@ -27,12 +26,12 @@ const emit = defineEmits([
       <span class="text-indigo-600 font-bold">Manage</span>
     </p>
     <Alert
-      :show="alert.isSuccess && alert.isShown"
+      :show="alert == 'success'"
       type="success"
       message="Form data saved successfully"
     />
     <Alert
-      :show="!alert.isSuccess && alert.isShown"
+      :show="alert === 'error'"
       type="error"
       message="Some fields are missing"
     />
