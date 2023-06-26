@@ -128,6 +128,7 @@ const emit = defineEmits([
       </div>
       <input
         type="submit"
+        :value="patient?.id ? 'Save' : 'Create'"
         class="bg-indigo-600 w-full p-3 text-white uppercase font-bold hover:bg-indigo-700 cursor-pointer transition-colors"
       />
     </form>
