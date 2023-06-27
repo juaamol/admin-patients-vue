@@ -1,10 +1,11 @@
 <script setup>
-import { ref, reactive, onBeforeUnmount, watch } from 'vue';
+import { ref, reactive, onBeforeUnmount, watch, onMounted } from 'vue';
 import { uid } from 'uid';
 import Header from './components/Header.vue';
 import Form from './components/Form.vue';
 import Patient from './components/Patient.vue';
 import { defaultPatient } from './data/app/patient';
+import { patientsService } from './data/app/patients-service';
 import { PatientForm } from './utils/patient-form';
 import { useAlert } from './composables/use-alert';
 
@@ -24,6 +25,7 @@ const errors = reactive({
   releaseDate: '',
 });
 
+const { alert, showError, showSuccess, hideAlert } = useAlert();
 const form = new PatientForm();
 const unsubscribeForm = form.subscribe((update) => {
   for (const key of Object.keys(update.values)) {
@@ -34,17 +36,7 @@ const unsubscribeForm = form.subscribe((update) => {
   isValid.value = update.isValid;
 });
 
-const { alert, showError, showSuccess, hideAlert } = useAlert();
-
-watch(alert, (alertType, _, cleanup) => {
-  if (!!alertType) {
-    const timeout = setTimeout(() => {
-      hideAlert();
-    }, 4000);
-
-    cleanup(() => clearTimeout(timeout));
-  }
-});
+const findPatient = (id) => patients.value.find((patient) => patient.id === id);
 
 const savePatient = () => {
   form.submit();
@@ -54,7 +46,7 @@ const savePatient = () => {
       patients.value.push({ ...patient, id: uid() });
     } else {
       const { id } = patient;
-      const patientToSave = patients.value.find((patient) => patient.id === id);
+      const patientToSave = findPatient(id) || {};
       Object.assign(patientToSave, patient);
     }
 
@@ -66,7 +58,7 @@ const savePatient = () => {
 };
 
 const editPatient = (id) => {
-  const patientToEdit = patients.value.find((patient) => patient.id === id);
+  const patientToEdit = findPatient(id);
 
   if (patientToEdit) {
     form.reinitialize({ initialValues: patientToEdit });
@@ -80,6 +72,22 @@ const deletePatient = (id) => {
     form.clean();
   }
 };
+
+watch(patients, patientsService.savePatients, { deep: true });
+
+watch(alert, (alertType, _, cleanup) => {
+  if (!!alertType) {
+    const timeout = setTimeout(() => {
+      hideAlert();
+    }, 4000);
+
+    cleanup(() => clearTimeout(timeout));
+  }
+});
+
+onMounted(() => {
+  patients.value = patientsService.getPatients();
+});
 
 onBeforeUnmount(() => {
   unsubscribeForm();
