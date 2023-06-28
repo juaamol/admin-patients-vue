@@ -1,10 +1,11 @@
 <script setup>
 import { ref, watch } from 'vue';
 
-const bgShow = ref('');
 const props = defineProps({
   isOpen: Boolean,
 });
+
+const bgShow = ref(props.isOpen ? '' : 'hidden');
 
 defineEmits(['cancel', 'accept']);
 
@@ -18,7 +19,6 @@ watch(props, (currentProps, _, cleanup) => {
 });
 </script>
 <template>
-  <button @click="$emit('cancel')">Toggle</button>
   <div
     class="relative z-10"
     aria-labelledby="modal-title"

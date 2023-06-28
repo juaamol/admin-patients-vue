@@ -10,6 +10,7 @@ import { patientsService } from './data/app/patients-service';
 import { PatientForm } from './utils/patient-form';
 import { useAlert } from './composables/use-alert';
 
+const isDialogOpen = ref(false);
 const isValid = ref(false);
 const patients = ref([]);
 const patient = reactive({ ...defaultPatient });
@@ -97,7 +98,8 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="container mx-auto mt-20">
-    <Dialog isOpen=""></Dialog>
+    <button @click="isDialogOpen = !isDialogOpen">Toggle</button>
+    <Dialog :isOpen="isDialogOpen" @cancel="isDialogOpen = false"></Dialog>
     <Header></Header>
     <div class="mt-12 md:flex">
       <Form
