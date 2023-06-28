@@ -68,13 +68,13 @@ watch(props, (currentProps, _, cleanup) => {
                     class="text-base font-semibold leading-6 text-gray-900"
                     id="modal-title"
                   >
-                    Deactivate account
+                    Delete patient
                   </h3>
                   <div class="mt-2">
                     <p class="text-sm text-gray-500">
-                      Are you sure you want to deactivate your account? All of
-                      your data will be permanently removed. This action cannot
-                      be undone.
+                      Are you sure you want to remove the patient? All of his
+                      data will be permanently removed. This action cannot be
+                      undone.
                     </p>
                   </div>
                 </div>
