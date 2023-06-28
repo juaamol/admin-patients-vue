@@ -2,6 +2,7 @@
 import { ref, reactive, onBeforeUnmount, watch, onMounted } from 'vue';
 import { uid } from 'uid';
 import Header from './components/Header.vue';
+import Dialog from './components/Dialog.vue';
 import Form from './components/Form.vue';
 import Patient from './components/Patient.vue';
 import { defaultPatient } from './data/app/patient';
@@ -96,6 +97,7 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="container mx-auto mt-20">
+    <Dialog isOpen=""></Dialog>
     <Header></Header>
     <div class="mt-12 md:flex">
       <Form
