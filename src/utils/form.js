@@ -19,7 +19,9 @@ export class Form {
   subscribe = (observer = () => {}) => {
     this.observer = observer;
 
-    return () => (this.observer = () => {});
+    return () => {
+      this.observer = () => {};
+    };
   };
 
   change = (element) => {
