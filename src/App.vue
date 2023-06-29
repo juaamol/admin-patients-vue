@@ -12,7 +12,6 @@ import { useAlert } from './composables/use-alert';
 
 const isDialogOpen = ref(false);
 const idPatientDelete = ref(null);
-const isValid = ref(false);
 const patients = ref([]);
 const patient = reactive({ ...defaultPatient });
 const touched = reactive({
@@ -36,7 +35,6 @@ const unsubscribeForm = form.subscribe((update) => {
     errors[key] = update.errors[key];
     touched[key] = update.touched[key];
   }
-  isValid.value = update.isValid;
 });
 
 const findPatient = (id) => patients.value.find((patient) => patient.id === id);
