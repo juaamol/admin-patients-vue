@@ -11,6 +11,7 @@ import { PatientForm } from './utils/patient-form';
 import { useAlert } from './composables/use-alert';
 
 const isDialogOpen = ref(false);
+const idPatientDelete = ref(null);
 const isValid = ref(false);
 const patients = ref([]);
 const patient = reactive({ ...defaultPatient });
@@ -75,31 +76,42 @@ const deletePatient = (id) => {
   }
 };
 
+const setPatientToDelete = () => {
+  isDialogOpen = true;
+  idPatientDelete = patient.id;
+};
+
+const cancelDelete = () => {
+  isDialogOpen = false;
+  idPatientDelete = null;
+};
+
+const acceptDelete = () => {
+  isDialogOpen = false;
+  deletePatient(idPatientDelete);
+};
+
 watch(patients, patientsService.savePatients, { deep: true });
 
 watch(alert, (alertType, _, cleanup) => {
   if (!!alertType) {
-    const timeout = setTimeout(() => {
-      hideAlert();
-    }, 4000);
+    const timeout = setTimeout(() => hideAlert(), 4000);
 
     cleanup(() => clearTimeout(timeout));
   }
 });
 
-onMounted(() => {
-  patients.value = patientsService.getPatients();
-});
-
-onBeforeUnmount(() => {
-  unsubscribeForm();
-});
+onMounted(() => (patients.value = patientsService.getPatients()));
+onBeforeUnmount(() => unsubscribeForm());
 </script>
 
 <template>
   <div class="container mx-auto mt-20">
-    <button @click="isDialogOpen = !isDialogOpen">Toggle</button>
-    <Dialog :isOpen="isDialogOpen" @cancel="isDialogOpen = false"></Dialog>
+    <Dialog
+      :isOpen="isDialogOpen"
+      @cancel="cancelDelete"
+      @accept="acceptDelete"
+    ></Dialog>
     <Header></Header>
     <div class="mt-12 md:flex">
       <Form
@@ -127,7 +139,7 @@ onBeforeUnmount(() => {
             :key="patient.id"
             :patient="patient"
             @edit="editPatient"
-            @delete="deletePatient"
+            @delete="setPatientToDelete"
           />
         </div>
         <p v-else class="text-lg mt-5 text-center mb-10">No patients</p>
