@@ -1,7 +1,9 @@
-# Vue 3 + Vite
+# Manage Patients
 
-This template should help get you started developing with Vue 3 in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+![image](https://github.com/juaamol/admin-patients-vue/assets/50924448/db0be608-4e18-4aed-8314-ccbec147020a)
 
-## Recommended IDE Setup
+Vue app to test the implementation of forms in Vue 3
 
-- [VS Code](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
+## How to run
+
+`npm run dev`: Run in dev mode
